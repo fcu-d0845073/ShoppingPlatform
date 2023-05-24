@@ -2,6 +2,7 @@ package com.example.shoppingplatform.Controller;
 
 import com.example.shoppingplatform.Dao.CommodityRecordRepository;
 import com.example.shoppingplatform.Dao.CommodityRepository;
+import com.example.shoppingplatform.Dao.UserRepository;
 import com.example.shoppingplatform.Model.Commodity;
 import com.example.shoppingplatform.Model.CommodityRecord;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,28 +19,31 @@ import java.lang.*;
 public class CommodityRecordController {
 
     @Autowired
+    private UserRepository userRepository;
+    @Autowired
     private CommodityRecordRepository commodityRecordRepository;
     @Autowired
     private CommodityRepository commodityRepository;
 
     @RequestMapping(path = "/SearchCommodityRecord")
     @ResponseBody
-    public List<CommodityRecord> searchCommodityRecord(@RequestParam String account) {
+    public List<Commodity> searchCommodityRecord(@RequestParam String account) {
+        //localhost:8080/CommodityRecord/SearchCommodityRecord?account=d0845073
         if (account.isEmpty())
             return null;
         List<CommodityRecord> commodityRecordList = commodityRecordRepository.findByPurchaseAccount(account);
-        if (commodityRecordList.get(0) == null)
+        if (commodityRecordList.size() == 0)
             return null;
-        for (CommodityRecord commodityRecord : commodityRecordList) {
-            if (commodityRecord.getUsed() == true)
-                commodityRecordList.remove(commodityRecord);
+        String[] ids = commodityRecordList.get(0).getPurchaseCommodity().split(",");
+        System.out.println("ids ： " + ids.length);
+        List<Commodity> commodityList = new ArrayList<Commodity>();
+        for (int i = 0; i < ids.length; i++) {
+            commodityList.add(commodityRepository.findById(Integer.parseInt(ids[i])).get());
         }
-        return commodityRecordList;
+        return commodityList;
     }
 
-    @RequestMapping(path = "/AddCommodityRecord")
-    @ResponseBody
-    public boolean addCommodityRecord(@RequestParam String account, @RequestParam int[] ids) {
+    public boolean addCommodityRecord(String account, int[] ids) {
         if (account.isEmpty())
             return false;
         if (ids.length == 0)
@@ -49,9 +53,16 @@ public class CommodityRecordController {
             Commodity commodity = commodityRepository.findById(id).get();
             if (commodity == null)
                 return false;
-            commodityRecord.setPurchaseAccount(account);
-            commodityRecord.setPurchaseCommodity(commodity);
-            commodityRecord.setUsed(false);
+            List<CommodityRecord> list = commodityRecordRepository.findByPurchaseAccount(account);
+            if (list.size() == 0) {
+                commodityRecord.setPurchaseAccount(account);
+                commodityRecord.setPurchaseCommodity(commodity.getId() + ",");
+                commodityRecordRepository.save(commodityRecord);
+            } else {
+                commodityRecord = list.get(0);
+                commodityRecord.setPurchaseCommodity(commodityRecord.getPurchaseCommodity() + commodity.getId() + ",");
+                commodityRecordRepository.save(commodityRecord);
+            }
         }
         return true;
     }
@@ -59,16 +70,27 @@ public class CommodityRecordController {
     @RequestMapping(path = "/Refund")
     @ResponseBody
     public boolean refund(@RequestParam String account, @RequestParam int id) {
+        //localhost:8080/CommodityRecord/Refund?account=d0845073&id=1
         if (account.isEmpty())
             return false;
-        List<CommodityRecord> commodityRecordList = commodityRecordRepository.findByPurchaseAccount(account);
-        for (CommodityRecord commodityRecord : commodityRecordList) {
-            if (commodityRecord.getId() == id) {
-                commodityRecord.setUsed(true);
-                commodityRecordRepository.save(commodityRecord);
-                return true;
+        if (id <= 0)
+            return false;
+        if (userRepository.findByAccount(account).size() == 0)
+            return false;
+        CommodityRecord commodityRecord = commodityRecordRepository.findByPurchaseAccount(account).get(0);
+        String[] ids = commodityRecord.getPurchaseCommodity().split(",");
+        String newPurchaseCommodity = new String();
+        for (int i = 0; i < ids.length; i++) {
+            if (Integer.parseInt(ids[i]) == id) {
+                ids[i] = ids[ids.length - 1];
+                break;
             }
         }
-        return false;
+        for (int i = 0; i < ids.length - 1; i++) {
+            newPurchaseCommodity = ids[i] + "," + newPurchaseCommodity;
+        }
+        commodityRecord.setPurchaseCommodity(newPurchaseCommodity);
+        commodityRecordRepository.save(commodityRecord);
+        return true;
     }
 }

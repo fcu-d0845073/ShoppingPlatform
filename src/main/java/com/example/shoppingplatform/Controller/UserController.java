@@ -11,25 +11,29 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.*;
 import java.lang.*;
 
-@RequestMapping(path = "/user")
+@RequestMapping(path = "/User")
 @Controller
 public class UserController {
 
     @Autowired
     private UserRepository userRepository;
 
-    public static boolean isEmpty(Collection<?> collection) {
-        return (collection == null || collection.isEmpty());
+    @RequestMapping(path = "/SearchAccount")
+    @ResponseBody
+    public Iterable<User> searchAccount() {
+        //localhost:8080/User/SearchAccount
+        return userRepository.findAll();
     }
 
     @RequestMapping(path = "/AddAccount")
     @ResponseBody
     public boolean addAccount(@RequestParam String account, @RequestParam String password) {
+        //localhost:8080/User/AddAccount?account=d0845073&password=123
         if (account.isEmpty())
             return false;
         if (password.isEmpty())
             return false;
-        if (userRepository.findByAccount(account).get(0) == null) {
+        if (userRepository.findByAccount(account).size() == 0) {
             User user = new User();
             user.setAccount(account);
             user.setPassword(password);
@@ -42,18 +46,20 @@ public class UserController {
     @RequestMapping(path = "/UpdateAccount")
     @ResponseBody
     public boolean updateAccount(@RequestParam String account, @RequestParam String oldPassword, @RequestParam String newPassword) {
+        //localhost:8080/User/UpdateAccount?account=d0845073&oldPassword=123&newPassword=234
         if (account.isEmpty())
             return false;
         if (oldPassword.isEmpty())
             return false;
         if (newPassword.isEmpty())
             return false;
-        User user = userRepository.findByAccount(account).get(0);
-        if (user == null)
+        List<User> list = userRepository.findByAccount(account);
+        if (list.size() == 0)
             return false;
-        if (user.getPassword() == oldPassword) {
-            user.setPassword(newPassword);
-            userRepository.save(user);
+        if (list.get(0).getPassword().equals(oldPassword)) {
+            list.get(0).setPassword(newPassword);
+            userRepository.save(list.get(0));
+            return true;
         }
         return false;
     }
@@ -61,14 +67,16 @@ public class UserController {
     @RequestMapping(path = "/login")
     @ResponseBody
     public boolean login(@RequestParam String account, @RequestParam String password) {
+        //localhost:8080/User/login?account=d0845073&password=123
         if (account.isEmpty())
             return false;
         if (password.isEmpty())
             return false;
-        User user = userRepository.findByAccount(account).get(0);
-        if (user == null)
+        List<User> list = userRepository.findByAccount(account);
+        if (list.size() == 0)
             return false;
-        if (user.getAccount() == account && user.getPassword() == password)
+        System.out.println(list.get(0).getPassword());
+        if (list.get(0).getPassword().equals(password))
             return true;
         return false;
     }

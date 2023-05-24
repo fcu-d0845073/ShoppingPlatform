@@ -1,11 +1,10 @@
 package com.example.shoppingplatform.Model;
 
 import jakarta.annotation.Generated;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.*;
+
 @Entity
+@Table(name = "ShoppingUser")//if you use h2 database, you have to add this line to avoid error. Because the name "User" is reserved word
 public class User {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)

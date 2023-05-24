@@ -7,21 +7,14 @@ public class CommodityRecord {
     @Id
     private int id;
     private String purchaseAccount;
-    @OneToOne
-    @JoinColumn(name = "address_id", nullable = false)
-    private Commodity purchaseCommodity;
-    private boolean used;
+    private String purchaseCommodity;
 
     public void setPurchaseAccount(String purchaseAccount) {
         this.purchaseAccount = purchaseAccount;
     }
 
-    public void setPurchaseCommodity(Commodity purchaseCommodity) {
+    public void setPurchaseCommodity(String purchaseCommodity) {
         this.purchaseCommodity = purchaseCommodity;
-    }
-
-    public void setUsed(boolean used) {
-        this.used = used;
     }
 
     public int getId() {
@@ -32,11 +25,8 @@ public class CommodityRecord {
         return purchaseAccount;
     }
 
-    public Commodity getPurchaseCommodity() {
+    public String getPurchaseCommodity() {
         return purchaseCommodity;
     }
 
-    public boolean getUsed() {
-        return used;
-    }
 }

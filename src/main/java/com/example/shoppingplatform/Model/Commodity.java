@@ -9,7 +9,7 @@ public class Commodity {
     private int id;
     private String name;
     private int price;
-    private String classfiation;
+    private String classfication;
     private String attribute;
     @Lob
     @Column(name = "photo", columnDefinition="BLOB")
@@ -24,8 +24,8 @@ public class Commodity {
         this.price = price;
     }
 
-    public void setClassfiation(String classfiation) {
-        this.classfiation = classfiation;
+    public void setClassfication(String classfiation) {
+        this.classfication = classfiation;
     }
 
     public void setAttribute(String attribute) {
@@ -52,8 +52,8 @@ public class Commodity {
         return price;
     }
 
-    public String getClassfiation() {
-        return classfiation;
+    public String getClassfication() {
+        return classfication;
     }
 
     public String getAttribute() {
