@@ -6,6 +6,7 @@ import com.example.shoppingplatform.Model.Commodity;
 import com.example.shoppingplatform.Model.CommodityRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 @RequestMapping(path = "/Commodity")
+@CrossOrigin
 @Controller
 public class CommodityController {
 
@@ -42,7 +44,7 @@ public class CommodityController {
     public boolean initCommodity() throws IOException {
         //localhost:8080/Commodity/InitCommodity
         String[] classfication = {"Book", "Cd"};
-        String[] attribute = {"education", "love", "terrible", "yt"};
+        String[] attribute = {"Education", "Love", "Terrible", "Yt"};
         for (int i = 0; i < 4; i++) {
             Commodity commodity = new Commodity();
             commodity.setName(Integer.toString(i));
