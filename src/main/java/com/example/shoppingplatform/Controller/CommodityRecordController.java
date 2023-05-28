@@ -39,7 +39,8 @@ public class CommodityRecordController {
         String[] ids = commodityRecordList.get(0).getPurchaseCommodity().split(",");
         List<Commodity> commodityList = new ArrayList<Commodity>();
         for (int i = 0; i < ids.length; i++) {
-            commodityList.add(commodityRepository.findById(Integer.parseInt(ids[i])).get());
+            if (!ids[0].equals(""))
+                commodityList.add(commodityRepository.findById(Integer.parseInt(ids[i])).get());
         }
         return commodityList;
     }
