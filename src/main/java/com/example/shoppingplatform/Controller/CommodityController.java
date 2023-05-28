@@ -44,13 +44,17 @@ public class CommodityController {
     public boolean initCommodity() throws IOException {
         //localhost:8080/Commodity/InitCommodity
         String[] classfication = {"Book", "Cd"};
-        String[] attribute = {"Education", "Love", "Terrible", "Yt"};
-        for (int i = 0; i < 4; i++) {
+        String[] attribute = {"Domestic", "Education", "Foreign", "Japan", "Love", "Terrible", "Yt"};
+        for (int i = 0; i < 7; i++) {
             Commodity commodity = new Commodity();
             commodity.setName(Integer.toString(i));
             commodity.setPrice(i);
             commodity.setQuantity(i + 1);
-            commodity.setClassfication("Book");
+            if (attribute[i].equals("Domestic") || attribute[i].equals("Japan") || attribute[i].equals("Foreign")) {
+                commodity.setClassfication("Cd");
+            } else {
+                commodity.setClassfication("Book");
+            }
             commodity.setAttribute(attribute[i]);
             byte[] bytes = null;
             bytes = getResourceFileBytesByClassPathResource(attribute[i] + ".JPG");
