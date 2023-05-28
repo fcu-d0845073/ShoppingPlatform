@@ -37,7 +37,6 @@ public class CommodityRecordController {
         if (commodityRecordList.size() == 0)
             return null;
         String[] ids = commodityRecordList.get(0).getPurchaseCommodity().split(",");
-        System.out.println("ids ： " + ids.length);
         List<Commodity> commodityList = new ArrayList<Commodity>();
         for (int i = 0; i < ids.length; i++) {
             commodityList.add(commodityRepository.findById(Integer.parseInt(ids[i])).get());
@@ -91,7 +90,11 @@ public class CommodityRecordController {
         for (int i = 0; i < ids.length - 1; i++) {
             newPurchaseCommodity = ids[i] + "," + newPurchaseCommodity;
         }
-        commodityRecord.setPurchaseCommodity(newPurchaseCommodity);
+        if (ids.length == 1) {
+            commodityRecord.setPurchaseCommodity("");
+        } else {
+            commodityRecord.setPurchaseCommodity(newPurchaseCommodity);
+        }
         commodityRecordRepository.save(commodityRecord);
         return true;
     }
